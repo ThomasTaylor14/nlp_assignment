@@ -5,9 +5,17 @@ import pandas as pd
 
 from sklearn.linear_model import LogisticRegression
 import torch
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_predict, cross_val_score, train_test_split
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
+from sklearn.svm import SVC 
 import transformers as ppb
-
 import pickle
+
+import warnings
+warnings.filterwarnings("ignore")
+
+
 
 
 class Classifier:
@@ -27,7 +35,6 @@ class Classifier:
         # Load pretrained model/tokenizer
         self.model = self.model_class.from_pretrained(self.pretrained_weights)
         self.tokenizer = self.tokenizer_class.from_pretrained(self.pretrained_weights)
-
 
     #############################################
     def train(self, train_filename: str, dev_filename: str, device: torch.device):
@@ -70,12 +77,91 @@ class Classifier:
         labels = df['polarity']
 
         # Training the model
-        clf = LogisticRegression(C=0.1, max_iter=2000) #Acc.: 82.45
+        #clf = LogisticRegression(C=0.1, max_iter=2000) #Acc.: 82.45
+        # gradient boosting : 80.5
+
+        # use cross validation to find the best parameters
+
+        # models = {'Logistic Regression': LogisticRegression(random_state = 42), 'Random Forest': RandomForestClassifier(random_state=4 ), 'Gradient Boosting': GradientBoostingClassifier(), 'SVM': SVC()}
+
+        # use cross validation to find the best parameters
+
+        # seperate in train and val set the train set
+
+        # X_train, X_val, y_train, y_val = train_test_split(features, labels, test_size=0.2, random_state=42)
+
+        # for name, model in models.items():
+        #     print(name)
+        #     print(model)
+        #     cv_score = cross_val_score(model, X_train, y_train, cv=5)
+        #     print('Cross Validation Score: ', cv_score)
+        #     print('Mean Cross Validation Score: ', np.mean(cv_score))
+        #     print('Standard Deviation of Cross Validation Score: ', np.std(cv_score))
+        #     print('--------------------------------------')
+
+        #     model.fit(X_train, y_train)
+
+        #     y_pred = model.predict(X_val)
+
+        #     print('Accuracy Score: ', accuracy_score(y_val, y_pred))
+        #     print('F1 Score: ', f1_score(y_val, y_pred, average='weighted'))
+        #     print('Precision Score: ', precision_score(y_val, y_pred, average='weighted'))
+        #     print('Recall Score: ', recall_score(y_val, y_pred, average='weighted'))
+        #     print('--------------------------------------')
+
+        #     # Results
+
+        #     Logistic Regression
+        #     LogisticRegression(random_state=42)
+        #     Cross Validation Score:  [0.80497925 0.82572614 0.80833333 0.83333333 0.85416667]
+        #     Mean Cross Validation Score:  0.8253077455048409
+        #     Standard Deviation of Cross Validation Score:  0.017881838367496353
+        #     --------------------------------------
+        #     Accuracy Score:  0.8272425249169435
+        #     F1 Score:  0.8172293332593132
+        #     Precision Score:  0.8078933236244482
+        #     Recall Score:  0.8272425249169435
+        #     --------------------------------------
+        #     Random Forest
+        #     RandomForestClassifier(random_state=4)
+        #     Cross Validation Score:  [0.83817427 0.78008299 0.7875     0.7875     0.7875    ]
+        #     Mean Cross Validation Score:  0.7961514522821578
+        #     Standard Deviation of Cross Validation Score:  0.02120686667960377
+        #     --------------------------------------
+        #     Accuracy Score:  0.7973421926910299
+        #     F1 Score:  0.7740023918157873
+        #     Precision Score:  0.763704134776171
+        #     Recall Score:  0.7973421926910299
+        #     --------------------------------------
+        #     Gradient Boosting
+        #     GradientBoostingClassifier()
+        #     Cross Validation Score:  [0.8340249  0.82572614 0.79583333 0.8        0.81666667]
+        #     Mean Cross Validation Score:  0.8144502074688796
+        #     Standard Deviation of Cross Validation Score:  0.014633005912053588
+        #     --------------------------------------
+        #     Accuracy Score:  0.813953488372093
+        #     F1 Score:  0.7996893791504212
+        #     Precision Score:  0.7876324166949619
+        #     Recall Score:  0.813953488372093
+        #     --------------------------------------
+        #     SVM
+        #     SVC()
+        #     Cross Validation Score:  [0.82157676 0.83817427 0.8125     0.80833333 0.79166667]
+        #     Mean Cross Validation Score:  0.8144502074688796
+        #     Standard Deviation of Cross Validation Score:  0.015322717230208845
+        #     --------------------------------------
+        #     Accuracy Score:  0.8272425249169435
+        #     F1 Score:  0.8013343152909604
+        #     Precision Score:  0.8050403174414356
+        #     Recall Score:  0.8272425249169435
+        
+        clf = GradientBoostingClassifier()
+        
 
         clf.fit(features, labels)
 
         # Saving weights of the model
-        filename = 'model.h5'
+        filename = 'model.v1'
         pickle.dump(clf, open(filename, 'wb'))
         print('Training is finished')
 
@@ -121,8 +207,15 @@ class Classifier:
         labels = df['polarity']
 
         # Loading and predicting with the model
-        filename = 'model.h5'
+        filename = 'model.v1'
         loaded_model = pickle.load(open(filename, 'rb'))
         predictions = loaded_model.predict(features)
+
+        # print accuracy, recall and precision, f1-score 
+
+        print('Accuracy: ', accuracy_score(labels, predictions))
+        print('Recall: ', recall_score(labels, predictions, average='macro'))
+        print('Precision: ', precision_score(labels, predictions, average='macro'))
+        print('F1-score: ', f1_score(labels, predictions, average='macro'))
 
         return predictions
