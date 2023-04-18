@@ -4,7 +4,7 @@ import argparse
 
 import torch
 
-from classifier import Classifier
+from src.classifier import Classifier
 
 
 def set_reproducible():
@@ -58,7 +58,7 @@ def train_and_eval(classifier, trainfile, devfile, testfile, run_id, device):
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=5)
+    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=1) # TODO put default back to 5 !!!
     argparser.add_argument('-g', '--gpu', help='GPU device id on which to run the model', type=int)
     args = argparser.parse_args()
     device_name = "cpu" if args.gpu is None else f"cuda:{args.gpu}"
