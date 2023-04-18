@@ -19,9 +19,13 @@ def set_reproducible():
     # in a well-defined state.
     rn.seed(12345)
 
+
+
 def load_label_output(filename):
     with open(filename, 'r', encoding='UTF-8') as f:
         return [line.strip().split("\t")[0] for line in f if line.strip()]
+
+
 
 def eval_list(glabels, slabels):
     if (len(glabels) != len(slabels)):
@@ -33,6 +37,8 @@ def eval_list(glabels, slabels):
         if slabels[i] != glabels[i]: incorrect_count += 1
     acc = (n - incorrect_count) / n
     return acc*100
+
+
 
 def train_and_eval(classifier, trainfile, devfile, testfile, run_id, device):
     print(f"\nRUN: {run_id}")
@@ -65,7 +71,7 @@ if __name__ == "__main__":
     device = torch.device(device_name)
     n_runs = args.n_runs
     set_reproducible()
-    datadir = "../data/"
+    datadir = "data//"
     trainfile =  datadir + "traindata.csv"
     devfile =  datadir + "devdata.csv"
     testfile = None
@@ -88,3 +94,9 @@ if __name__ == "__main__":
     print("Mean Dev Acc.: %.2f (%.2f)" % (np.mean(devaccs), np.std(devaccs)))
     print("Mean Test Acc.: %.2f (%.2f)" % (np.mean(testaccs), np.std(testaccs)))
     print("\nExec time: %.2f s. ( %d per run )" % (total_exec_time, total_exec_time / n_runs))
+
+
+
+
+
+

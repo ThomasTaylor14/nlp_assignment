@@ -1,8 +1,5 @@
 import time, sys
 import numpy as np
-import argparse
-
-import torch
 
 from classifier import Classifier
 
@@ -19,9 +16,13 @@ def set_reproducible():
     # in a well-defined state.
     rn.seed(12345)
 
+
+
 def load_label_output(filename):
     with open(filename, 'r', encoding='UTF-8') as f:
         return [line.strip().split("\t")[0] for line in f if line.strip()]
+
+
 
 def eval_list(glabels, slabels):
     if (len(glabels) != len(slabels)):
@@ -34,13 +35,15 @@ def eval_list(glabels, slabels):
     acc = (n - incorrect_count) / n
     return acc*100
 
-def train_and_eval(classifier, trainfile, devfile, testfile, run_id, device):
+
+
+def train_and_eval(classifier, trainfile, devfile, testfile, run_id):
     print(f"\nRUN: {run_id}")
     print("  %s.1. Training the classifier..." % str(run_id))
-    classifier.train(trainfile, devfile, device)
+    classifier.train(trainfile, devfile)
     print()
     print("  %s.2. Eval on the dev set..." % str(run_id), end="")
-    slabels = classifier.predict(devfile, device)
+    slabels = classifier.predict(devfile)
     glabels = load_label_output(devfile)
     devacc = eval_list(glabels, slabels)
     print(" Acc.: %.2f" % devacc)
@@ -57,14 +60,10 @@ def train_and_eval(classifier, trainfile, devfile, testfile, run_id, device):
 
 
 if __name__ == "__main__":
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=5)
-    argparser.add_argument('-g', '--gpu', help='GPU device id on which to run the model', type=int)
-    args = argparser.parse_args()
-    device_name = "cpu" if args.gpu is None else f"cuda:{args.gpu}"
-    device = torch.device(device_name)
-    n_runs = args.n_runs
     set_reproducible()
+    n_runs = 5
+    if len(sys.argv) > 1:
+        n_runs = int(sys.argv[1])
     datadir = "../data/"
     trainfile =  datadir + "traindata.csv"
     devfile =  datadir + "devdata.csv"
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     testaccs = []
     for i in range(1, n_runs+1):
         classifier =  Classifier()
-        devacc, testacc = train_and_eval(classifier, trainfile, devfile, testfile, i, device)
+        devacc, testacc = train_and_eval(classifier, trainfile, devfile, testfile, i)
         devaccs.append(np.round(devacc,2))
         testaccs.append(np.round(testacc,2))
     print('\nCompleted %d runs.' % n_runs)
