@@ -75,12 +75,12 @@ class Classifier:
 
         # Saving the 'polarity' of the sentence to the 'labels'
         labels = df['polarity']
+       
 
         # Training the model
         #clf = LogisticRegression(C=0.1, max_iter=2000) #Acc.: 82.45
-        # gradient boosting : 80.5
-
-        # use cross validation to find the best parameters
+        #LR {'C': 0.1, 'max_iter': 100, 'penalty': 'l2', 'solver': 'newton-cg'} # 83
+        # SVC {'C': 100, 'gamma': 'auto', 'kernel': 'rbf', 'max_iter': 2000}
 
         # models = {'Logistic Regression': LogisticRegression(random_state = 42), 'Random Forest': RandomForestClassifier(random_state=4 ), 'Gradient Boosting': GradientBoostingClassifier(), 'SVM': SVC()}
 
@@ -88,7 +88,8 @@ class Classifier:
 
         # seperate in train and val set the train set
 
-        # X_train, X_val, y_train, y_val = train_test_split(features, labels, test_size=0.2, random_state=42)
+        # use cross validation to find the best parameters
+
 
         # for name, model in models.items():
         #     print(name)
@@ -154,14 +155,13 @@ class Classifier:
         #     F1 Score:  0.8013343152909604
         #     Precision Score:  0.8050403174414356
         #     Recall Score:  0.8272425249169435
-        
-        clf = GradientBoostingClassifier()
-        
-
-        clf.fit(features, labels)
 
         # Saving weights of the model
-        filename = 'model.v1'
+        
+        clf = LogisticRegression(random_state=42, C= 0.1, max_iter = 100, penalty = 'l2', solver= 'newton-cg', n_jobs=-1)
+        # clf =  SVC(random_state=42, C= 100, gamma= 'auto', kernel='rbf', max_iter= 2000) # 80.59
+        clf.fit(features, labels)
+        filename = 'LR_tuned_v2.h5'
         pickle.dump(clf, open(filename, 'wb'))
         print('Training is finished')
 
@@ -207,7 +207,7 @@ class Classifier:
         labels = df['polarity']
 
         # Loading and predicting with the model
-        filename = 'model.v1'
+        filename = 'LR_tuned.h5'
         loaded_model = pickle.load(open(filename, 'rb'))
         predictions = loaded_model.predict(features)
 
