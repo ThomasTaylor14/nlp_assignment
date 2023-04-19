@@ -9,7 +9,7 @@ from src.tester import set_reproducible, train_and_eval
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=5)
+    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=1)
     argparser.add_argument('-g', '--gpu', help='GPU device id on which to run the model', type=int)
     args = argparser.parse_args()
     device_name = "cpu" if args.gpu is None else f"cuda:{args.gpu}"

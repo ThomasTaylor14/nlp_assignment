@@ -4,8 +4,7 @@ import argparse
 
 import torch
 
-from classifier import Classifier
-
+from classifier_armand import Classifier
 
 def set_reproducible():
     # The below is necessary to have reproducible behavior.
@@ -37,7 +36,7 @@ def eval_list(glabels, slabels):
 def train_and_eval(classifier, trainfile, devfile, testfile, run_id, device):
     print(f"\nRUN: {run_id}")
     print("  %s.1. Training the classifier..." % str(run_id))
-    classifier.train(trainfile, devfile, device)
+    classifier.train(trainfile, devfile , device = device)
     print()
     print("  %s.2. Eval on the dev set..." % str(run_id), end="")
     slabels = classifier.predict(devfile, device)
@@ -58,7 +57,7 @@ def train_and_eval(classifier, trainfile, devfile, testfile, run_id, device):
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=1)
+    argparser.add_argument('-n', '--n_runs', help='Number of runs.', type=int, default=5)
     argparser.add_argument('-g', '--gpu', help='GPU device id on which to run the model', type=int)
     args = argparser.parse_args()
     device_name = "cpu" if args.gpu is None else f"cuda:{args.gpu}"

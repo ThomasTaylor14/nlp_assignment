@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_predict, cross_val_score, train_test_split
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
 from sklearn.svm import SVC 
-import transformers as ppb
+from transformers import DistilBertModel, DistilBertTokenizer
 import pickle
 
 import warnings
@@ -30,8 +30,8 @@ class Classifier:
 
     def __init__(self) -> None:
         # Loading BERT pre-trained model
-        self.model_class, self.tokenizer_class, self.pretrained_weights = (ppb.DistilBertModel, ppb.DistilBertTokenizer, 'distilbert-base-uncased')
-
+        self.model_class, self.tokenizer_class, self.pretrained_weights = (DistilBertModel, DistilBertTokenizer, 'distilbert-base-uncased')
+        
         # Load pretrained model/tokenizer
         self.model = self.model_class.from_pretrained(self.pretrained_weights)
         self.tokenizer = self.tokenizer_class.from_pretrained(self.pretrained_weights)
@@ -207,7 +207,7 @@ class Classifier:
         labels = df['polarity']
 
         # Loading and predicting with the model
-        filename = 'LR_tuned.h5'
+        filename = 'LR_tuned_v2.h5'
         loaded_model = pickle.load(open(filename, 'rb'))
         predictions = loaded_model.predict(features)
 
