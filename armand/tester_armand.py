@@ -4,7 +4,7 @@ import argparse
 
 import torch
 
-from classifier_armand import Classifier
+from DL_test import Classifier
 
 def set_reproducible():
     # The below is necessary to have reproducible behavior.
