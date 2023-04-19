@@ -1,11 +1,16 @@
-from typing import List
-
 import numpy as np
 import pandas as pd
 import torch
 import transformers as tsf
 
+from transformers import RobertaModel
+
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+
 
 class Classifier:
     """
@@ -20,9 +25,6 @@ class Classifier:
         # Load pretrained model/tokenizer
         self.model = self.model_class.from_pretrained(self.pretrained_weights)
         self.tokenizer = self.tokenizer_class.from_pretrained(self.pretrained_weights)
-
-        # Defines the name of the model file.
-        self.file_name = 'model_LR_tuned.h5'
 
     def train(self, train_filename: str, dev_filename: str, device: torch.device):
         """
@@ -47,14 +49,11 @@ class Classifier:
         labels = df_train['polarity']
         print("    -----> Data preprocessing done.")
 
-        print(features)
-        # Training the model.
-        self.clf = LogisticRegression(random_state=42, C= 0.1, max_iter = 100, penalty = 'l2', solver= 'newton-cg', n_jobs=-1)
+        # self.clf = LogisticRegression(random_state=42, C= 0.1, max_iter = 100, penalty = 'l2', solver= 'newton-cg', n_jobs=-1)
+        self.clf= SVC(C= 100, gamma= 'auto', kernel= 'rbf', max_iter= 2000)
         self.clf.fit(features, labels)
         print("    -----> Model trained.")
 
-
-        
     def get_text_features(self, text_series: pd.Series, device: torch.device):
         """
         Tokenizes and transformes the sentence so that they can be used to train models.
@@ -86,9 +85,7 @@ class Classifier:
         return last_hidden_states[0][:, 0, :].cpu().numpy()
     
     
-
-
-    def predict(self, data_filename: str, device: torch.device) -> List[str]:
+    def predict(self, data_filename: str, device: torch.device):
         """Predicts class labels for the input instances in file 'datafile'
         Returns the list of predicted labels
         PLEASE:
