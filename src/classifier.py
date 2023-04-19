@@ -39,8 +39,6 @@ class Classifier:
         # Apply the wrap_aspect to each row of the DataFrame
         df_train["sentence"] = df_train.apply(wrap_aspect_term, axis=1)
 
-        print(df_train["sentence"][0])
-
         # Creates the features and labels DataFrames.
         features = self.get_text_features(df_train['sentence'], device)
         labels = df_train['polarity']
