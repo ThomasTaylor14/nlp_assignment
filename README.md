@@ -14,32 +14,30 @@ The goal of this assignment is to implement a classifier that predicts opinion p
 ## Data
 
 The data is composed of several features concerning the restaurants reviews. We have the following features:
-- 'polarity': the polarity of the review (positive, negative or neutral)
-- 'aspect categories': the aspect categories of the review
-- 'targer_term' : the target term of the review
-- 'sentence' : the sentence of the review
-- 'charachter_offset' : the character offset of the target term in the sentence
+- 'polarity': the polarity of the review (positive, negative or neutral). This is the label that we are trying to predict, our target variable.
+- 'aspect category': the aspect categories of the review.
+- 'target term' : the aspect term of the review.
+- 'sentence' : the text review.
+- 'character offset' : the position of the target term in the sentence. 
 
-# Code
+## Modeling
 
-## Choice of tokenizer
+### Choice of tokenizer and text embedding model
 
 In this implementation, we use the DistilBertTokenizer from the transformers library. The tokenizer is used to break down the sentences into tokens or words, which can be inputted to the DistilBert model. The DistilBertTokenizer is trained on the same corpus as the DistilBertModel and can be used to tokenize the data for training and inference.
 
-We load the pretrained DistilBertModel and DistilBertTokenizer using the from_pretrained method of their respective classes. The tokenizer is used to tokenize the sentences by encoding them, adding special tokens such as '[CLS]' (beginning of sentence) and '[SEP]' (end of sentence), and breaking them down into word and subword tokens.
+We load the pretrained DistilBertModel and DistilBertTokenizer using the from_pretrained method of their respective classes. The tokenizer is used to tokenize the sentences by encoding them, adding special tokens such as '[CLS]' (beginning of sentence) and '[SEP]' (end of sentence), and breaking them down into word and subword tokens. Additionally, we add the token '[ASP]' (before the aspect term) and '[/ASP]' (after the aspect term) to wrap the target word and point to it.
 
 We also use padding and masking to ensure that all sequences are of the same length before feeding them into the model. Padding is added to the end of sequences that are shorter than the longest sequence, while masking is used to ignore the padding during training.
 
 After tokenization and preprocessing, the sentences are then run through the DistilBert model to generate embeddings or feature vectors. These features are then used as inputs to a logistic regression model to predict the sentiment of the input sentences.
 
 
-Regenerate response
-
-## Choice of model
+### Choice of predictive model
 
 The best model for this Natural Language Processing (NLP) assignment was selected using cross-validation. The following machine learning models were evaluated:
 
--  Logistic Regression
+- Logistic Regression
 - Random Forest
 - Gradient Boosting
 - Support Vector Machine (SVM)
@@ -48,7 +46,7 @@ The cross_val_score function was used to find the best parameters for each model
 
 The results of the cross-validation are shown below for each model:
 
-### Logistic Regression
+#### Logistic Regression
 - Mean Cross Validation Score: 0.8253
 - Standard Deviation of Cross Validation Score: 0.0179
 - Accuracy Score: 0.8272
@@ -56,7 +54,7 @@ The results of the cross-validation are shown below for each model:
 - Precision Score: 0.8079
 - Recall Score: 0.8272
 
-### Random Forest
+#### Random Forest
 - Mean Cross Validation Score: 0.7962
 - Standard Deviation of Cross Validation Score: 0.0212
 - Accuracy Score: 0.7973
@@ -64,7 +62,7 @@ The results of the cross-validation are shown below for each model:
 - Precision Score: 0.7637
 - Recall Score: 0.7973
 
-### Gradient Boosting
+#### Gradient Boosting
 - Mean Cross Validation Score: 0.8145
 - Standard Deviation of Cross Validation Score: 0.0146
 - Accuracy Score: 0.8139
@@ -72,7 +70,7 @@ The results of the cross-validation are shown below for each model:
 - Precision Score: 0.7876
 - Recall Score: 0.8139
 
-### SVM
+#### SVM
 - Mean Cross Validation Score: 0.8145
 - Standard Deviation of Cross Validation Score: 0.0153
 - Accuracy Score: 0.8272
@@ -85,5 +83,5 @@ Based on these results, we chose to use the Logistic Regression model to classif
 
 # Results
 
-We achieve in with our best model, the Logistic Regression tuned with GridSearchCV, an accuracy of 82.45 % on the dev set. 
+Our best result is obtained using Logistic Regression tuned with GridSearchCV, and yields an accuracy of 82.45 % on the dev set. 
 
